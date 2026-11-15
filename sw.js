@@ -1,4 +1,4 @@
-const CACHE = 'anniversary-v1';
+const CACHE = 'anniversary-v2';
 const CORE = [
   './',
   './index.html',
@@ -7,7 +7,6 @@ const CORE = [
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
-  './check.enc',
   './map/echarts.min.js',
   './map/china.js',
 ];
