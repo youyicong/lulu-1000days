@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>璐璐宝宝 ❤ 鱿鱼葱 · 1000天纪念日</title>
+<meta name="theme-color" content="#ff6b9a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="我们的纪念日">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="map/echarts.min.js"></script>
+<script src="map/china.js"></script>
+<style>
+  :root{
+    --pink:#ff6b9a;
+    --pink-deep:#e75480;
+    --pink-soft:#ffb3c6;
+    --pink-pale:#ffe0ea;
+    --cream:#fff7f9;
+    --text:#5a3d4a;
+    --text-light:#8f6b7a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Noto Sans SC', -apple-system, sans-serif;
+    color:var(--text);
+    background:linear-gradient(180deg,#fff0f5 0%,#ffe4ec 45%,#ffd6e4 100%);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .heading{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;}
+
+  /* ---------- 漂浮爱心 ---------- */
+  #hearts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .heart-float{position:absolute;bottom:-60px;font-size:22px;opacity:0;
+    animation:floatUp linear infinite;}
+  @keyframes floatUp{
+    0%{transform:translateY(0) rotate(0deg) scale(1);opacity:0;}
+    10%{opacity:.7;}
+    90%{opacity:.5;}
+    100%{transform:translateY(-110vh) rotate(360deg) scale(1.2);opacity:0;}
+  }
+
+  /* ---------- 飘落鲜花 ---------- */
+  #flowers{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .flower-fall{position:absolute;top:-60px;font-size:22px;opacity:0;
+    animation:fall linear infinite;}
+  @keyframes fall{
+    0%{transform:translate3d(0,-5vh,0) rotate(0deg);opacity:0;}
+    10%{opacity:.9;}
+    90%{opacity:.6;}
+    100%{transform:translate3d(var(--sway,0),112vh,0) rotate(var(--spin,360deg));opacity:.4;}
+  }
+
+  /* ---------- 星光闪烁 ---------- */
+  #stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+  .star{position:absolute;opacity:0;animation:twinkle 3s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.5);}50%{opacity:.9;transform:scale(1.3);}}
+
+  /* ---------- 流星 ---------- */
+  .shoot{position:fixed;z-index:2;font-size:22px;pointer-events:none;opacity:0;
+    animation:shoot 1.8s ease-out forwards;}
+  @keyframes shoot{
+    0%{opacity:0;transform:translate(0,0) rotate(0deg);}
+    12%{opacity:1;}
+    100%{opacity:0;transform:translate(45vw,30vh) rotate(40deg);}
+  }
+
+  /* ---------- 点击爱心爆炸 ---------- */
+  .burst{position:fixed;z-index:300;pointer-events:none;transform:translate(-50%,-50%);
+    animation:burst .9s ease-out forwards;}
+  @keyframes burst{
+    0%{opacity:1;transform:translate(-50%,-50%) scale(.4);}
+    100%{opacity:0;transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.3);}
+  }
+
+  /* ---------- 滚动进入动画 ---------- */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease;}
+  .reveal.visible{opacity:1;transform:none;}
+
+  /* ---------- 内容 ---------- */
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 20px;}
+
+  .music-btn{position:fixed;top:18px;right:18px;z-index:10;width:52px;height:52px;
+    border-radius:50%;border:none;cursor:pointer;font-size:24px;
+    background:#fff;box-shadow:0 6px 20px rgba(231,84,128,.25);transition:.25s;}
+  .music-btn:hover{transform:scale(1.1);}
+  .music-btn.playing{animation:spin 4s linear infinite;background:var(--pink);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* Hero */
+  .hero{text-align:center;padding:80px 0 30px;}
+  .hero .avatars{font-size:64px;margin-bottom:6px;animation:bounce 2s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+  .hero h1{font-size:clamp(34px,7vw,60px);color:var(--pink-deep);
+    background:linear-gradient(90deg,#ff6b9a,#ff8fb1,#ff6b9a);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    margin:12px 0 4px;}
+  .hero .sub{font-size:18px;color:var(--text-light);letter-spacing:2px;}
+  .badge{display:inline-block;margin-top:16px;padding:8px 20px;border-radius:999px;
+    background:#fff;color:var(--pink-deep);font-weight:700;box-shadow:0 6px 18px rgba(231,84,128,.18);}
+  .btn{display:inline-block;margin-top:20px;padding:14px 30px;border-radius:999px;
+    background:linear-gradient(135deg,#ff6b9a,#ff8fb1);color:#fff;font-size:17px;font-weight:700;
+    text-decoration:none;box-shadow:0 10px 26px rgba(231,84,128,.35);transition:.25s;}
+  .btn:hover{transform:translateY(-2px) scale(1.03);}
+
+  /* 里程碑 */
+  .milestone{text-align:center;margin-top:20px;padding:26px 20px;border-radius:28px;
+    background:linear-gradient(135deg,#ff6b9a,#ff8fb1);color:#fff;
+    box-shadow:0 12px 34px rgba(231,84,128,.35);}
+  .milestone .big{font-size:clamp(30px,8vw,46px);font-weight:700;margin:8px 0;}
+  .milestone .small{font-size:15px;opacity:.95;letter-spacing:1px;}
+
+  /* 计时器 */
+  .counter{background:#fff;border-radius:32px;padding:40px 24px;text-align:center;
+    box-shadow:0 14px 40px rgba(231,84,128,.16);margin-top:26px;}
+  .counter .label{font-size:16px;color:var(--text-light);letter-spacing:1px;}
+  .counter .days{font-size:clamp(60px,16vw,110px);font-weight:700;color:var(--pink);
+    line-height:1;margin:14px 0;font-family:'ZCOOL KuaiLe',sans-serif;}
+  .counter .days small{font-size:26px;font-weight:400;}
+  .counter .time{font-size:clamp(18px,5vw,26px);color:var(--text);
+    font-variant-numeric:tabular-nums;letter-spacing:2px;}
+  .counter .time b{color:var(--pink-deep);}
+
+  /* 通用卡片 */
+  .card{background:#fff;border-radius:32px;padding:40px 30px;
+    box-shadow:0 14px 40px rgba(231,84,128,.14);margin:30px 0;}
+  .card h2{font-size:30px;color:var(--pink-deep);text-align:center;margin-bottom:26px;}
+
+  /* 情书 */
+  .letter{font-size:17px;line-height:2;white-space:pre-wrap;color:var(--text);text-align:center;}
+  .letter .sign{margin-top:18px;color:var(--pink-deep);font-weight:700;}
+
+  /* 时间线 */
+  .timeline{position:relative;margin:10px 0;padding-left:28px;}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;
+    width:3px;border-radius:3px;background:linear-gradient(#ffb3c6,#ff6b9a);}
+  .tl-item{position:relative;padding:0 0 30px 18px;}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:6px;width:16px;height:16px;
+    border-radius:50%;background:#fff;border:4px solid var(--pink);}
+  .tl-item .date{display:inline-block;font-size:13px;color:#fff;background:var(--pink);
+    padding:3px 12px;border-radius:999px;font-weight:700;letter-spacing:1px;}
+  .tl-item h3{font-size:19px;margin:8px 0 4px;color:var(--pink-deep);}
+  .tl-item p{font-size:15px;line-height:1.8;color:var(--text-light);}
+
+  /* 照片墙 · 爱心形状 */
+  .gallery{position:relative;width:100%;max-width:640px;margin:0 auto;aspect-ratio:1/1;}
+  .photo{position:absolute;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;
+    cursor:pointer;border:3px solid #fff;box-shadow:0 6px 16px rgba(231,84,128,.25);
+    transition:transform .3s, box-shadow .3s;}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .photo:hover{transform:translate(-50%,-50%) scale(1.18);box-shadow:0 12px 26px rgba(231,84,128,.45);z-index:999;}
+
+  /* 大图灯箱 */
+  .lightbox{position:fixed;inset:0;background:rgba(40,10,20,.92);z-index:100;
+    display:none;align-items:center;justify-content:center;flex-direction:column;}
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:90vw;max-height:75vh;border-radius:16px;box-shadow:0 10px 50px rgba(0,0,0,.5);}
+  .lightbox .cap{color:#fff;margin-top:14px;font-size:16px;}
+  .lightbox .nav{position:absolute;top:50%;transform:translateY(-50%);font-size:44px;color:#fff;
+    cursor:pointer;background:rgba(255,255,255,.12);border-radius:50%;width:60px;height:60px;
+    display:flex;align-items:center;justify-content:center;user-select:none;transition:.2s;}
+  .lightbox .nav:hover{background:rgba(255,255,255,.3);}
+  .lightbox .prev{left:18px;}.lightbox .next{right:18px;}
+  .lightbox .close{position:absolute;top:20px;right:24px;font-size:34px;color:#fff;cursor:pointer;}
+
+  /* 电影专栏 · 票根风格 */
+  .movies{display:flex;flex-direction:column;gap:18px;}
+  .movie{display:flex;background:#fff;border-radius:18px;overflow:hidden;
+    box-shadow:0 10px 26px rgba(231,84,128,.16);}
+  .movie .poster{width:118px;flex-shrink:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;color:#fff;padding:16px 12px;text-align:center;}
+  .movie .poster .em{font-size:38px;margin-bottom:8px;filter:drop-shadow(0 2px 5px rgba(0,0,0,.25));}
+  .movie .poster .tt{font-family:'ZCOOL KuaiLe','Noto Sans SC',sans-serif;font-size:16px;
+    line-height:1.45;text-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .movie .perf{flex-shrink:0;border-left:2px dashed #ffd0df;margin:14px 0;}
+  .movie .info{flex:1;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .movie .info h3{font-size:20px;color:var(--pink-deep);margin-bottom:8px;}
+  .movie .info .when{font-size:14px;color:var(--text);line-height:1.6;}
+
+  /* 中国地图 */
+  #chinaMap{width:100%;height:460px;}
+  .map-legend{display:flex;justify-content:center;gap:24px;margin-top:14px;font-size:13px;color:var(--text-light);}
+  .map-legend .lg{display:flex;align-items:center;gap:6px;}
+  .map-legend .dot{width:12px;height:12px;border-radius:3px;display:inline-block;}
+  .map-legend .dot.visited{background:linear-gradient(135deg,#ff8fb1,#e75480);}
+  .map-legend .dot.unvisited{background:#f6e9ee;}
+  .map-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px;}
+  .map-tag{background:#fff;color:var(--pink-deep);padding:7px 16px;border-radius:999px;
+    font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(231,84,128,.15);}
+
+  /* 密码锁 */
+  #lock{position:fixed;inset:0;z-index:9999;background:linear-gradient(180deg,#fff0f5,#ffe4ec);
+    display:flex;align-items:center;justify-content:center;transition:opacity .6s ease, visibility .6s;}
+  #lock.hide{opacity:0;visibility:hidden;pointer-events:none;}
+  .lock-box{text-align:center;padding:42px 32px;background:#fff;border-radius:28px;
+    box-shadow:0 20px 60px rgba(231,84,128,.25);max-width:340px;width:100%;margin:0 20px;}
+  .lock-emoji{font-size:54px;margin-bottom:10px;animation:bounce 2s infinite;}
+  .lock-box h1{font-size:24px;color:var(--pink-deep);margin-bottom:6px;}
+  .lock-box p{font-size:14px;color:var(--text-light);margin-bottom:22px;}
+  .lock-box input{width:100%;padding:14px;border:2px solid var(--pink-pale);border-radius:14px;
+    font-size:18px;text-align:center;letter-spacing:4px;outline:none;margin-bottom:14px;
+    color:var(--text);transition:border-color .2s;box-sizing:border-box;}
+  .lock-box input:focus{border-color:var(--pink);}
+  .lock-btn{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;font-size:17px;
+    font-weight:700;color:#fff;background:linear-gradient(135deg,#ff6b9a,#ff8fb1);
+    box-shadow:0 8px 20px rgba(231,84,128,.3);transition:.2s;}
+  .lock-btn:hover{transform:translateY(-2px);}
+  .lock-err{display:none;color:#e74c3c;font-size:13px;margin-top:12px;}
+  .lock-box.shake{animation:shake .5s;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-10px);}40%{transform:translateX(10px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
+
+  footer{text-align:center;padding:40px 0 50px;color:var(--text-light);font-size:14px;}
+  footer .heart{color:var(--pink);}
+
+  @media(max-width:480px){
+    .card{padding:30px 20px;}
+    .tl-item{padding-left:12px;}
+    #chinaMap{height:320px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 密码锁 -->
+<div id="lock">
+  <div class="lock-box">
+    <div class="lock-emoji">🔒💕</div>
+    <h1 class="heading">给璐璐宝宝的小惊喜</h1>
+    <p>输入我们的小秘密，解锁这份心意</p>
+    <input type="password" id="lockInput" placeholder="输入密码" autocomplete="off">
+    <button class="lock-btn" id="lockBtn">解锁 💕</button>
+    <div class="lock-err" id="lockErr">密码不对哦，再想想～</div>
+  </div>
+</div>
+
+<div id="hearts"></div>
+<div id="flowers"></div>
+<div id="stars"></div>
+
+<button class="music-btn" id="musicBtn" title="播放/暂停音乐">🎵</button>
+
+<div class="wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="avatars">🐻‍❄️💕🦑</div>
+    <h1 class="heading">璐璐宝宝 ❤ 鱿鱼葱</h1>
+    <div class="sub">我们的恋爱纪念日</div>
+    <div class="badge">💌 给最爱的璐璐宝宝</div>
+    <div>
+      <a class="btn" href="words.html">💕 点开看我们的情话</a>
+    </div>
+  </section>
+
+  <!-- 1000天里程碑 -->
+  <section class="milestone" id="milestone">
+    <div class="small" id="msLabel">距我们第 1000 天纪念日还有</div>
+    <div class="big" id="msBig">…</div>
+    <div class="small" id="msDate"></div>
+  </section>
+
+  <!-- 计时器 -->
+  <section class="counter">
+    <div class="label">我们已经在一起</div>
+    <div class="days" id="days">0 <small>天</small></div>
+    <div class="time" id="time">0 小时 0 分 0 秒</div>
+    <div class="sub" id="dateText" style="margin-top:12px;"></div>
+  </section>
+
+  <!-- 情书 -->
+  <section class="card">
+    <h2 class="heading">💌 想对你说</h2>
+    <div class="letter" id="letter"></div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="card">
+    <h2 class="heading">🕰️ 我们的故事</h2>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- 照片墙 -->
+  <section class="card">
+    <h2 class="heading">📸 我们的合照</h2>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <!-- 电影专栏 -->
+  <section class="card">
+    <h2 class="heading">🎬 我们的电影</h2>
+    <p style="text-align:center;color:var(--text-light);font-size:14px;margin:-14px 0 22px;">和宝宝一起看过的每一场电影 · 我们的电影票根</p>
+    <div class="movies" id="movies"></div>
+  </section>
+
+  <!-- 中国地图 -->
+  <section class="card">
+    <h2 class="heading">🗺️ 一起去过的地方</h2>
+    <p style="text-align:center;color:var(--text-light);font-size:14px;margin:-14px 0 18px;">已经一起点亮了 5 个省份 💕</p>
+    <div id="chinaMap"></div>
+    <div class="map-legend">
+      <span class="lg"><i class="dot visited"></i>已点亮</span>
+      <span class="lg"><i class="dot unvisited"></i>待打卡</span>
+    </div>
+    <div class="map-tags" id="mapTags"></div>
+  </section>
+
+  <footer>
+    <span class="heart">❤</span> 用心做给璐璐宝宝 · 第 1000 天快乐 <span class="heart">❤</span>
+    <div style="margin-top:8px;font-size:12px;opacity:.7;">背景音乐：Teddy Bear Waltz · Kevin MacLeod (incompetech.com) · CC BY 4.0</div>
+  </footer>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="close" id="lbClose">✕</div>
+  <div class="nav prev" id="lbPrev">‹</div>
+  <img id="lbImg" src="" alt="">
+  <div class="cap" id="lbCap"></div>
+  <div class="nav next" id="lbNext">›</div>
+</div>
+
+<script>
+// ---------- 密码锁 · 照片加密解密 ----------
+const SALT_HEX = "7963f58dbd5af9aa3460bc131cac69c7";
+const CHECK_PLAIN = "OK-1000-days";
+const lockEl = document.getElementById('lock');
+const lockInput = document.getElementById('lockInput');
+const lockBtn = document.getElementById('lockBtn');
+const lockBox = lockEl.querySelector('.lock-box');
+const lockErr = document.getElementById('lockErr');
+let cryptoKey = null;
+
+function hexToBuf(hex){
+  return new Uint8Array(hex.match(/.{2}/g).map(h => parseInt(h, 16)));
+}
+async function deriveKey(password){
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt: hexToBuf(SALT_HEX), iterations:100000, hash:'SHA-256' },
+    km, { name:'AES-GCM', length:256 }, false, ['decrypt']
+  );
+}
+async function decryptData(key, buf){
+  return crypto.subtle.decrypt({ name:'AES-GCM', iv: buf.slice(0,12) }, key, buf.slice(12));
+}
+async function fetchBuf(url){
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('fetch ' + url);
+  return new Uint8Array(await res.arrayBuffer());
+}
+
+async function tryUnlock(){
+  const pwd = lockInput.value.trim();
+  if(!pwd) return;
+  lockBtn.disabled = true;
+  lockBtn.textContent = '解锁中…';
+  try {
+    const key = await deriveKey(pwd);
+    const checkBuf = await fetchBuf('check.enc');
+    const checkPlain = new TextDecoder().decode(await decryptData(key, checkBuf));
+    if(checkPlain !== CHECK_PLAIN) throw new Error('bad password');
+    cryptoKey = key;
+    await decryptPhotos();
+    lockEl.classList.add('hide');
+  } catch(e) {
+    lockErr.style.display = 'block';
+    lockBox.classList.remove('shake'); void lockBox.offsetWidth; lockBox.classList.add('shake');
+    lockInput.value = '';
+    lockBtn.disabled = false;
+    lockBtn.textContent = '解锁 💕';
+  }
+}
+lockBtn.addEventListener('click', tryUnlock);
+lockInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+/* ============================================================
+   👇 在这里改你的专属内容（改完保存刷新即可）
+   ============================================================ */
+const CONFIG = {
+  // 💖 在一起的日期（注意：你写的是 2004，我按 2024.02.22 处理了——
+  //     因为 2024.02.22 的第 1000 天正好是 2026.11.17，和"1000天纪念日"对得上）
+  startDate: "2024-02-22T00:00:00",
+
+  names: { boy: "鱿鱼葱", girl: "璐璐宝宝" },
+
+  // 🎵 背景音乐（免费可商用曲目 Teddy Bear Waltz；想换歌就把 mp3 放进 music/ 文件夹并改这里）
+  music: "music/bgm.mp3",   // 若没有文件，改为 "" 可禁用
+
+  // 💌 想对她说的话（用 \n 换行；这段是从你的备忘录情书里提取的）
+  message: "亲爱的小璐璐：\n\n虽然说可能前世有关联的人，第一次碰到，虽然看着宝宝的脸陌生，但心里总有种熟悉的感觉。\n\n第一次看到最爱的宝宝，是有次晚自习。我记忆犹新，当时坐在最左边的后排……那天宝宝脸上透过阳光，满满青春美好的模样，给我留下深深的印象。\n\n毕业撕书那天，看着漫天散落的书片，我心里悄然许下愿望：希望宝宝往后顺利幸福。\n\n后来不知不觉我们就大学啦，从没想到过有天宝宝会来找我。很开心很开心能和宝宝在一起——真的不是滤镜，就是看到宝宝我好开心好开心，心里由衷喜欢爱的人，就是不管怎么样，我都希望宝宝是个幸福快乐的小女生。\n\n我好想好想一直和宝宝这样：手牵手在街头游荡，一起坐摩天轮，一起去海洋馆，一起看美丽的建筑，一起吃火锅、吃宝宝配的特别香的酱料，一起早睡早起，给你穿鞋穿袜子，一起出现在镜头里……\n\n小游子也一直期盼着和宝宝好多好多年。逢人我便说：我和最爱的宝宝在一起很多很多年啦。\n\n大家都说害怕异地的相恋，可是宝宝给了我很大很大的勇气。因为我知道，跨过高山，我的宝宝一定会在那里等着我。我们每次见面的各种票据，我都好好收藏着，希望将来能展示给我们的朋友看。\n\n爱你璐璐宝宝，希望明天、后天、三餐、四季，未来都是你。\n\n",
+  sign: "—— 最爱你的小游子 🦑",
+
+  // 🕰️ 时间线（按时间从早到晚排序；日期可以自己改）
+  timeline: [
+    { date: "高中",       title: "初次遇见你", text: "晚自习时第一次看到你，脸上透过阳光，是青春里最美好的模样。" },
+    { date: "毕业那天",   title: "为你许愿", text: "看着漫天书片，心里悄悄许愿，希望你往后一直顺利幸福。" },
+    { date: "2024.02.22", title: "我们在一起啦", text: "大学里重逢，你走进了我的生活，从今天起你是我的宝宝啦。" },
+    { date: "2024.11.22", title: "在一起九个月", text: "璐璐公主九个月快乐鸭～" },
+    { date: "2025.01.01", title: "新年伊始", text: "新的一年，也要和超爱的璐璐公主宝宝一起走。" },
+    { date: "某一天",     title: "桂林之行", text: "嘿嘿，和璐璐公举的桂林之行完美落幕。" },
+    { date: "2026.11.17", title: "1000天纪念日", text: "喜欢是一朝一夕，也是朝朝暮暮。三餐四季，未来都是你。" },
+  ],
+
+  // 📸 照片墙（已自动加载 photos/ 里 80 张照片；想删掉某张就改下面的数组）
+  photos: Array.from({length:80}, (_,i) => ({
+    src: 'photos/photo_' + String(i+1).padStart(2,'0') + '.enc',
+    caption: ''
+  })),
+
+  // 🎬 电影专栏（一起看过的电影，按时间排序；改片名/日期在这里）
+  movies: [
+    { title: "志愿军",         date: "2024.10.04", time: "12:00", emoji: "🎬", color: "linear-gradient(135deg,#c0392b,#e67e22)" },
+    { title: "孤星计划",       date: "2024.12.18", time: "20:45", emoji: "🎬", color: "linear-gradient(135deg,#5b8def,#8fd3f4)" },
+    { title: "哪吒",           date: "2025.02.22", time: "13:00", emoji: "🎬", color: "linear-gradient(135deg,#ff6b9a,#ff8fb1)" },
+    { title: "疯狂动物城",     date: "2025.12.20", time: "19:40", emoji: "🎬", color: "linear-gradient(135deg,#43b3a5,#7bd8c0)" },
+    { title: "飞驰人生",       date: "2026.03.02", time: "21:45", emoji: "🎬", color: "linear-gradient(135deg,#ff9a56,#ffcb80)" },
+    { title: "夜王",           date: "2026.03.13", time: "20:10", emoji: "🎬", color: "linear-gradient(135deg,#a18cd1,#fbc2eb)" },
+    { title: "惊执无声",       date: "2026.04.02", time: "13:50", emoji: "🎬", color: "linear-gradient(135deg,#e75480,#ffb3c6)" },
+    { title: "天才游戏",       date: "2026.04.17", time: "20:05", emoji: "🎬", color: "linear-gradient(135deg,#5b8def,#8fd3f4)" },
+    { title: "阳光女子合唱团", date: "2026.04.18", time: "20:20", emoji: "🎬", color: "linear-gradient(135deg,#ff6b9a,#ff8fb1)" },
+    { title: "给阿嬷的情书",   date: "2026.06.17", time: "20:40", emoji: "🎬", color: "linear-gradient(135deg,#43b3a5,#7bd8c0)" },
+    { title: "欢迎来到龙餐馆", date: "2026.08.18", time: "13:50", emoji: "🎬", color: "linear-gradient(135deg,#ff9a56,#ffcb80)" },
+    { title: "去你的岛",       date: "2026.08.30", time: "10:05", emoji: "🎬", color: "linear-gradient(135deg,#a18cd1,#fbc2eb)" },
+    { title: "牛来",           date: "2026.08.30", time: "15:05", emoji: "🎬", color: "linear-gradient(135deg,#e75480,#ffb3c6)" },
+    { title: "默杀",           date: "",          time: "",     emoji: "🎬", color: "linear-gradient(135deg,#5b8def,#8fd3f4)" },
+  ],
+};
+/* ============================================================ */
+
+// ---------- 漂浮爱心 ----------
+(function makeHearts(){
+  const box = document.getElementById('hearts');
+  const emojis = ['💗','💕','💖','🩷','💘','🌸'];
+  for(let i=0;i<22;i++){
+    const s = document.createElement('span');
+    s.className = 'heart-float';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.fontSize = (16 + Math.random()*26) + 'px';
+    s.style.animationDuration = (8 + Math.random()*10) + 's';
+    s.style.animationDelay = (Math.random()*12) + 's';
+    box.appendChild(s);
+  }
+})();
+
+// ---------- 飘落鲜花 ----------
+(function makeFlowers(){
+  const box = document.getElementById('flowers');
+  const emojis = ['🌸','🌺','🌹','🌷','🌼','💮','🪻','💐'];
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.className = 'flower-fall';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.fontSize = (16 + Math.random()*22) + 'px';
+    s.style.animationDuration = (9 + Math.random()*8) + 's';
+    s.style.animationDelay = (Math.random()*15) + 's';
+    s.style.setProperty('--sway', (Math.random()*160-80) + 'px');
+    s.style.setProperty('--spin', (Math.random()*720-360) + 'deg');
+    box.appendChild(s);
+  }
+})();
+
+// ---------- 星光闪烁 ----------
+(function makeStars(){
+  const box = document.getElementById('stars');
+  const emojis = ['✨','⭐','🌟','💫'];
+  for(let i=0;i<30;i++){
+    const s = document.createElement('span');
+    s.className = 'star';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = Math.random()*100 + '%';
+    s.style.fontSize = (8 + Math.random()*12) + 'px';
+    s.style.animationDuration = (2 + Math.random()*3) + 's';
+    s.style.animationDelay = (Math.random()*4) + 's';
+    box.appendChild(s);
+  }
+})();
+
+// ---------- 流星 ----------
+(function shootingStar(){
+  function star(){
+    const s = document.createElement('span');
+    s.className = 'shoot';
+    s.textContent = '🌠';
+    s.style.left = (Math.random()*55) + '%';
+    s.style.top = (Math.random()*30) + '%';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 2000);
+  }
+  setTimeout(star, 3000);
+  setInterval(star, 9000);
+})();
+
+// ---------- 点击爱心爆炸 ----------
+function spawnBurst(x, y){
+  const emojis = ['💗','💕','💖','🩷','💘','✨'];
+  for(let i=0;i<12;i++){
+    const s = document.createElement('span');
+    s.className = 'burst';
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.fontSize = (12 + Math.random()*14) + 'px';
+    const a = Math.random()*Math.PI*2, d = 40 + Math.random()*80;
+    s.style.setProperty('--dx', Math.cos(a)*d + 'px');
+    s.style.setProperty('--dy', Math.sin(a)*d + 'px');
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 950);
+  }
+}
+document.addEventListener('click', e => {
+  if(e.target.closest('.photo, .btn, .music-btn, .lightbox, a, button')) return;
+  spawnBurst(e.clientX, e.clientY);
+});
+
+// ---------- 滚动进入动画 ----------
+(function reveal(){
+  const els = document.querySelectorAll('.card, .counter, .milestone');
+  els.forEach(el => el.classList.add('reveal'));
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if(en.isIntersecting){ en.target.classList.add('visible'); io.unobserve(en.target); } });
+    }, {threshold: 0.08});
+    els.forEach(el => io.observe(el));
+  } else {
+    els.forEach(el => el.classList.add('visible'));
+  }
+})();
+
+// ---------- 计时器 ----------
+const start = new Date(CONFIG.startDate);
+const dateText = document.getElementById('dateText');
+dateText.textContent = '从 ' + start.getFullYear() + '年' + (start.getMonth()+1) + '月' +
+  start.getDate() + '日 开始';
+function pad(n){ return n<10 ? '0'+n : n; }
+
+// 第1000天纪念日 = start + 999 天（第1000天 = 999天后，即 2026.11.17）
+const msDate = new Date(start.getTime() + 999*86400000);
+document.getElementById('msDate').textContent =
+  '第 1000 天 · ' + msDate.getFullYear() + '年' + (msDate.getMonth()+1) + '月' + msDate.getDate() + '日';
+
+function tick(){
+  const now = new Date();
+  let diff = now - start;
+  if(diff < 0){ document.getElementById('days').innerHTML = '0 <small>天</small>';
+    document.getElementById('time').textContent = '即将开始 💕'; return; }
+  const sec = Math.floor(diff/1000);
+  const days = Math.floor(sec/86400);
+  const h = Math.floor(sec%86400/3600);
+  const m = Math.floor(sec%3600/60);
+  const s = sec%60;
+  document.getElementById('days').innerHTML = days + ' <small>天</small>';
+  document.getElementById('time').innerHTML =
+    '<b>'+pad(h)+'</b> 小时 <b>'+pad(m)+'</b> 分 <b>'+pad(s)+'</b> 秒';
+
+  // 里程碑
+  const toMs = msDate - now;
+  const msLabel = document.getElementById('msLabel');
+  const msBig = document.getElementById('msBig');
+  if(toMs > 0){
+    const d = Math.floor(toMs/86400000);
+    const hh = Math.floor(toMs%86400000/3600000);
+    const mm = Math.floor(toMs%3600000/60000);
+    msLabel.textContent = '距我们第 1000 天纪念日还有';
+    msBig.textContent = d + ' 天 ' + hh + ' 时 ' + mm + ' 分';
+  } else {
+    msLabel.textContent = '🎉 就是今天！我们已经';
+    msBig.textContent = '1000 天啦';
+  }
+}
+tick(); setInterval(tick, 1000);
+
+// ---------- 情书 ----------
+const letterEl = document.getElementById('letter');
+letterEl.textContent = CONFIG.message;
+const signEl = document.createElement('div');
+signEl.className = 'sign';
+signEl.textContent = CONFIG.sign;
+letterEl.appendChild(signEl);
+
+// ---------- 时间线 ----------
+(function renderTimeline(){
+  const box = document.getElementById('timeline');
+  CONFIG.timeline.forEach(t => {
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.innerHTML = '<span class="date">'+t.date+'</span><h3>'+t.title+'</h3><p>'+t.text+'</p>';
+    box.appendChild(item);
+  });
+})();
+
+// ---------- 照片墙 · 加密照片，解锁后解密渲染（爱心形状） ----------
+let photoList = [];
+
+async function decryptPhotos(){
+  const box = document.getElementById('gallery');
+  box.innerHTML = '<div style="text-align:center;color:var(--text-light);padding:34px;">🔓 正在解密照片…</div>';
+  const items = [];
+  for(let i=0;i<CONFIG.photos.length;i++){
+    const buf = await fetchBuf(CONFIG.photos[i].src);
+    const plain = await decryptData(cryptoKey, buf);
+    const blob = new Blob([plain], {type:'image/jpeg'});
+    items.push({ src: URL.createObjectURL(blob), caption: CONFIG.photos[i].caption || '' });
+  }
+  renderGallery(items);
+}
+
+function renderGallery(items){
+  const box = document.getElementById('gallery');
+  box.innerHTML = '';
+
+  // 爱心包围盒（由爱心方程 (x²+y²-1)³ = x²y³ 数值求得）
+  const minx=-1.13, maxx=1.13, miny=-0.99, maxy=1.23;
+  const nx=12, ny=11;              // 网格密度：恰好 80 个点，左右完全对称
+  const sx=(maxx-minx)/(nx-1), sy=(maxy-miny)/(ny-1);
+  let pts = [];
+  for(let i=0;i<nx;i++) for(let j=0;j<ny;j++){
+    const x=minx+i*sx, y=miny+j*sy;
+    if((x*x+y*y-1)**3 - x*x*y*y*y < 0) pts.push([x,y]);
+  }
+
+  // 统一缩放映射（不变形），居中 + 留边距
+  const w=maxx-minx, h=maxy-miny, S=Math.max(w,h);
+  const cx=(minx+maxx)/2, cy=(miny+maxy)/2, pad=0.05;
+  const toX = x => (0.5 + (x-cx)/S*(1-2*pad))*100;
+  const toY = y => (0.5 - (y-cy)/S*(1-2*pad))*100;
+  const diam = (sx/S)*(1-2*pad)*1.35*100;  // 照片直径（略有重叠，铺满）
+
+  const total = Math.min(items.length, pts.length);
+  for(let k=0;k<total;k++){
+    const p = items[k];
+    const [x,y] = pts[k];
+    const d = document.createElement('div');
+    d.className = 'photo';
+    d.style.left = toX(x) + '%';
+    d.style.top  = toY(y) + '%';
+    d.style.width = diam + '%';
+    d.style.height = diam + '%';
+    d.style.zIndex = k + 1;
+    d.innerHTML = '<img src="'+p.src+'" alt="照片">';
+    d.addEventListener('click', () => openLightbox(k));
+    box.appendChild(d);
+  }
+  photoList = items;
+}
+
+// ---------- 大图灯箱 ----------
+let lbIndex = 0;
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbCap = document.getElementById('lbCap');
+function openLightbox(i){
+  lbIndex = i; updateLightbox(); lightbox.classList.add('show');
+}
+function updateLightbox(){
+  const p = photoList[lbIndex];
+  lbImg.src = p.src; lbCap.textContent = p.caption || '';
+}
+function closeLightbox(){ lightbox.classList.remove('show'); }
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.getElementById('lbPrev').addEventListener('click', () => {
+  lbIndex = (lbIndex - 1 + photoList.length) % photoList.length; updateLightbox();
+});
+document.getElementById('lbNext').addEventListener('click', () => {
+  lbIndex = (lbIndex + 1) % photoList.length; updateLightbox();
+});
+lightbox.addEventListener('click', e => { if(e.target === lightbox) closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if(!lightbox.classList.contains('show')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft'){ lbIndex=(lbIndex-1+photoList.length)%photoList.length; updateLightbox(); }
+  if(e.key === 'ArrowRight'){ lbIndex=(lbIndex+1)%photoList.length; updateLightbox(); }
+});
+
+// ---------- 电影专栏 ----------
+(function renderMovies(){
+  const box = document.getElementById('movies');
+  CONFIG.movies.forEach(m => {
+    const when = m.date ? ('📅 ' + m.date + (m.time ? ' · 🕐 ' + m.time : '')) : '📅 日期待补';
+    const d = document.createElement('div');
+    d.className = 'movie';
+    d.innerHTML =
+      '<div class="poster" style="background:' + m.color + '">'
+      + '<div class="em">' + m.emoji + '</div>'
+      + '<div class="tt">' + m.title + '</div>'
+      + '</div>'
+      + '<div class="perf"></div>'
+      + '<div class="info">'
+      + '<h3>' + m.title + '</h3>'
+      + '<div class="when">' + when + '</div>'
+      + '</div>';
+    box.appendChild(d);
+  });
+})();
+
+// ---------- 中国地图 · 一起去过的地方 ----------
+(function renderChinaMap(){
+  const el = document.getElementById('chinaMap');
+  const visited = ['湖南省','广西壮族自治区','四川省','广东省','陕西省'];
+  const short = ['湖南','广西','四川','广东','陕西'];
+
+  // 文字标签（离线也能看到）
+  const tagBox = document.getElementById('mapTags');
+  short.forEach(t => {
+    const s = document.createElement('span');
+    s.className = 'map-tag';
+    s.textContent = '📍 ' + t;
+    tagBox.appendChild(s);
+  });
+
+  if(typeof echarts === 'undefined'){
+    el.innerHTML = '<div style="padding:46px 20px;text-align:center;color:var(--text-light);">地图组件没加载出来，看上面的标签就好啦 💕</div>';
+    return;
+  }
+
+  try {
+    const geo = window.CHINA_GEO;
+    if(!geo) throw new Error('no geo');
+    echarts.registerMap('china', geo);
+    const chart = echarts.init(el);
+    const allNames = geo.features.map(f => f.properties.name);
+    const data = allNames.map(name => ({ name, value: visited.includes(name) ? 1 : 0 }));
+    chart.setOption({
+      tooltip: { trigger: 'item', formatter: p => p.name + (visited.includes(p.name) ? ' 💕 一起去过' : '') },
+      series: [{
+        type: 'map', map: 'china', roam: false,
+        label: { show: false },
+        itemStyle: { areaColor: '#f6e9ee', borderColor: '#fff', borderWidth: 1.2 },
+        emphasis: { label: { show: true, color: '#e75480', fontSize: 13 }, itemStyle: { areaColor: '#ffd6e4' } },
+        data: data,
+      }],
+      visualMap: { show: false, min: 0, max: 1, inRange: { color: ['#f6e9ee', '#e75480'] } },
+    });
+    window.addEventListener('resize', () => chart.resize());
+  } catch(e) {
+    el.innerHTML = '<div style="padding:46px 20px;text-align:center;color:var(--text-light);">地图没加载出来，看上面的标签就好啦 💕</div>';
+  }
+})();
+
+// ---------- 音乐 ----------
+const musicBtn = document.getElementById('musicBtn');
+let audio = null;
+musicBtn.addEventListener('click', () => {
+  if(!CONFIG.music){
+    alert('还没有设置背景音乐～ 把歌曲放进 music/ 文件夹并填路径即可 🎵');
+    return;
+  }
+  if(!audio){ audio = new Audio(CONFIG.music); audio.loop = true; }
+  if(audio.paused){ audio.play().catch(()=>alert('找不到音乐文件，请把 mp3 放进 music/ 文件夹')); musicBtn.classList.add('playing'); }
+  else { audio.pause(); musicBtn.classList.remove('playing'); }
+});
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
+</script>
+</body>
+</html>
