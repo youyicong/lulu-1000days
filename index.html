@@ -99,6 +99,8 @@
   /* Hero */
   .hero{text-align:center;padding:80px 0 30px;}
   .hero .avatars{font-size:64px;margin-bottom:6px;animation:bounce 2s infinite;}
+  .cake-pop{font-size:48px;margin:2px 0 4px;display:inline-block;animation:bob 2.4s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-10px) rotate(3deg);}}
   @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
   .hero h1{font-size:clamp(34px,7vw,60px);color:var(--pink-deep);
     background:linear-gradient(90deg,#ff6b9a,#ff8fb1,#ff6b9a);
@@ -197,27 +199,6 @@
   .map-tag{background:#fff;color:var(--pink-deep);padding:7px 16px;border-radius:999px;
     font-size:14px;font-weight:600;box-shadow:0 4px 12px rgba(231,84,128,.15);}
 
-  /* 密码锁 */
-  #lock{position:fixed;inset:0;z-index:9999;background:linear-gradient(180deg,#fff0f5,#ffe4ec);
-    display:flex;align-items:center;justify-content:center;transition:opacity .6s ease, visibility .6s;}
-  #lock.hide{opacity:0;visibility:hidden;pointer-events:none;}
-  .lock-box{text-align:center;padding:42px 32px;background:#fff;border-radius:28px;
-    box-shadow:0 20px 60px rgba(231,84,128,.25);max-width:340px;width:100%;margin:0 20px;}
-  .lock-emoji{font-size:54px;margin-bottom:10px;animation:bounce 2s infinite;}
-  .lock-box h1{font-size:24px;color:var(--pink-deep);margin-bottom:6px;}
-  .lock-box p{font-size:14px;color:var(--text-light);margin-bottom:22px;}
-  .lock-box input{width:100%;padding:14px;border:2px solid var(--pink-pale);border-radius:14px;
-    font-size:18px;text-align:center;letter-spacing:4px;outline:none;margin-bottom:14px;
-    color:var(--text);transition:border-color .2s;box-sizing:border-box;}
-  .lock-box input:focus{border-color:var(--pink);}
-  .lock-btn{width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;font-size:17px;
-    font-weight:700;color:#fff;background:linear-gradient(135deg,#ff6b9a,#ff8fb1);
-    box-shadow:0 8px 20px rgba(231,84,128,.3);transition:.2s;}
-  .lock-btn:hover{transform:translateY(-2px);}
-  .lock-err{display:none;color:#e74c3c;font-size:13px;margin-top:12px;}
-  .lock-box.shake{animation:shake .5s;}
-  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-10px);}40%{transform:translateX(10px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
-
   footer{text-align:center;padding:40px 0 50px;color:var(--text-light);font-size:14px;}
   footer .heart{color:var(--pink);}
 
@@ -230,18 +211,6 @@
 </head>
 <body>
 
-<!-- 密码锁 -->
-<div id="lock">
-  <div class="lock-box">
-    <div class="lock-emoji">🔒💕</div>
-    <h1 class="heading">给璐璐宝宝的小惊喜</h1>
-    <p>输入我们的小秘密，解锁这份心意</p>
-    <input type="password" id="lockInput" placeholder="输入密码" autocomplete="off">
-    <button class="lock-btn" id="lockBtn">解锁 💕</button>
-    <div class="lock-err" id="lockErr">密码不对哦，再想想～</div>
-  </div>
-</div>
-
 <div id="hearts"></div>
 <div id="flowers"></div>
 <div id="stars"></div>
@@ -252,7 +221,8 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="avatars">🐻‍❄️💕🦑</div>
+    <div class="avatars">🌸 🐻‍❄️ 💕 🦑 🌷</div>
+    <div class="cake-pop">🎂</div>
     <h1 class="heading">璐璐宝宝 ❤ 鱿鱼葱</h1>
     <div class="sub">我们的恋爱纪念日</div>
     <div class="badge">💌 给最爱的璐璐宝宝</div>
@@ -329,59 +299,6 @@
 </div>
 
 <script>
-// ---------- 密码锁 · 照片加密解密 ----------
-const SALT_HEX = "7963f58dbd5af9aa3460bc131cac69c7";
-const CHECK_PLAIN = "OK-1000-days";
-const lockEl = document.getElementById('lock');
-const lockInput = document.getElementById('lockInput');
-const lockBtn = document.getElementById('lockBtn');
-const lockBox = lockEl.querySelector('.lock-box');
-const lockErr = document.getElementById('lockErr');
-let cryptoKey = null;
-
-function hexToBuf(hex){
-  return new Uint8Array(hex.match(/.{2}/g).map(h => parseInt(h, 16)));
-}
-async function deriveKey(password){
-  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey(
-    { name:'PBKDF2', salt: hexToBuf(SALT_HEX), iterations:100000, hash:'SHA-256' },
-    km, { name:'AES-GCM', length:256 }, false, ['decrypt']
-  );
-}
-async function decryptData(key, buf){
-  return crypto.subtle.decrypt({ name:'AES-GCM', iv: buf.slice(0,12) }, key, buf.slice(12));
-}
-async function fetchBuf(url){
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('fetch ' + url);
-  return new Uint8Array(await res.arrayBuffer());
-}
-
-async function tryUnlock(){
-  const pwd = lockInput.value.trim();
-  if(!pwd) return;
-  lockBtn.disabled = true;
-  lockBtn.textContent = '解锁中…';
-  try {
-    const key = await deriveKey(pwd);
-    const checkBuf = await fetchBuf('check.enc');
-    const checkPlain = new TextDecoder().decode(await decryptData(key, checkBuf));
-    if(checkPlain !== CHECK_PLAIN) throw new Error('bad password');
-    cryptoKey = key;
-    await decryptPhotos();
-    lockEl.classList.add('hide');
-  } catch(e) {
-    lockErr.style.display = 'block';
-    lockBox.classList.remove('shake'); void lockBox.offsetWidth; lockBox.classList.add('shake');
-    lockInput.value = '';
-    lockBtn.disabled = false;
-    lockBtn.textContent = '解锁 💕';
-  }
-}
-lockBtn.addEventListener('click', tryUnlock);
-lockInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
-
 /* ============================================================
    👇 在这里改你的专属内容（改完保存刷新即可）
    ============================================================ */
@@ -412,7 +329,7 @@ const CONFIG = {
 
   // 📸 照片墙（已自动加载 photos/ 里 80 张照片；想删掉某张就改下面的数组）
   photos: Array.from({length:80}, (_,i) => ({
-    src: 'photos/photo_' + String(i+1).padStart(2,'0') + '.enc',
+    src: 'photos/photo_' + String(i+1).padStart(2,'0') + '.jpg',
     caption: ''
   })),
 
@@ -600,25 +517,11 @@ letterEl.appendChild(signEl);
   });
 })();
 
-// ---------- 照片墙 · 加密照片，解锁后解密渲染（爱心形状） ----------
+// ---------- 照片墙 · 爱心形状（对称铺满），点击打开大图 ----------
 let photoList = [];
-
-async function decryptPhotos(){
+(function renderGallery(){
   const box = document.getElementById('gallery');
-  box.innerHTML = '<div style="text-align:center;color:var(--text-light);padding:34px;">🔓 正在解密照片…</div>';
-  const items = [];
-  for(let i=0;i<CONFIG.photos.length;i++){
-    const buf = await fetchBuf(CONFIG.photos[i].src);
-    const plain = await decryptData(cryptoKey, buf);
-    const blob = new Blob([plain], {type:'image/jpeg'});
-    items.push({ src: URL.createObjectURL(blob), caption: CONFIG.photos[i].caption || '' });
-  }
-  renderGallery(items);
-}
-
-function renderGallery(items){
-  const box = document.getElementById('gallery');
-  box.innerHTML = '';
+  const photos = CONFIG.photos;
 
   // 爱心包围盒（由爱心方程 (x²+y²-1)³ = x²y³ 数值求得）
   const minx=-1.13, maxx=1.13, miny=-0.99, maxy=1.23;
@@ -637,9 +540,9 @@ function renderGallery(items){
   const toY = y => (0.5 - (y-cy)/S*(1-2*pad))*100;
   const diam = (sx/S)*(1-2*pad)*1.35*100;  // 照片直径（略有重叠，铺满）
 
-  const total = Math.min(items.length, pts.length);
+  const total = Math.min(photos.length, pts.length);
   for(let k=0;k<total;k++){
-    const p = items[k];
+    const p = photos[k];
     const [x,y] = pts[k];
     const d = document.createElement('div');
     d.className = 'photo';
@@ -648,12 +551,12 @@ function renderGallery(items){
     d.style.width = diam + '%';
     d.style.height = diam + '%';
     d.style.zIndex = k + 1;
-    d.innerHTML = '<img src="'+p.src+'" alt="照片">';
+    d.innerHTML = '<img src="'+p.src+'" loading="lazy" alt="照片">';
     d.addEventListener('click', () => openLightbox(k));
     box.appendChild(d);
+    photoList.push(p);
   }
-  photoList = items;
-}
+})();
 
 // ---------- 大图灯箱 ----------
 let lbIndex = 0;
